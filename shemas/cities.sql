@@ -1,18 +1,18 @@
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'cities' AND schema_id = SCHEMA_ID('gestion_ventes'))
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'cities' AND schema_id = SCHEMA_ID('oltp'))
 BEGIN
-    CREATE TABLE gestion_ventes.cities (
+    CREATE TABLE oltp.cities (
         city_id INT IDENTITY PRIMARY KEY,
         province_id INT NOT NULL,
         name NVARCHAR(100) NOT NULL,
         CONSTRAINT FK_cities_provinces FOREIGN KEY (province_id)
-            REFERENCES gestion_ventes.provinces(province_id),
+            REFERENCES oltp.provinces(province_id),
         CONSTRAINT UQ_city UNIQUE (province_id, name)
     );
 END;
 GO
 
 
-INSERT INTO gestion_ventes.cities (province_id, name)
+INSERT INTO oltp.cities (province_id, name)
 SELECT p.province_id, v.city
 FROM (VALUES
     -- Kinshasa (ville-province)
@@ -119,11 +119,11 @@ FROM (VALUES
     ('Tanganyika','Kalemie'),
     ('Tanganyika','Nyunzu')
 ) v(province, city)
-JOIN gestion_ventes.provinces p 
+JOIN oltp.provinces p 
     ON p.name = v.province
 WHERE NOT EXISTS (
     SELECT 1
-    FROM gestion_ventes.cities c
+    FROM oltp.cities c
     WHERE c.province_id = p.province_id
       AND c.name = v.city
 );

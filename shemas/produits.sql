@@ -1,20 +1,20 @@
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'products' AND schema_id = SCHEMA_ID('gestion_ventes'))
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'products' AND schema_id = SCHEMA_ID('oltp'))
 BEGIN
-    CREATE TABLE gestion_ventes.products (
+    CREATE TABLE oltp.products (
         product_id INT IDENTITY PRIMARY KEY,
         category_id INT NOT NULL,
         name NVARCHAR(150) NOT NULL,
         unit NVARCHAR(50) NOT NULL,
         is_active BIT DEFAULT 1,
         CONSTRAINT FK_products_categories FOREIGN KEY (category_id)
-            REFERENCES gestion_ventes.product_categories(category_id)
+            REFERENCES oltp.product_categories(category_id)
     );
 END;
 GO
 
 
 
-INSERT INTO gestion_ventes.products (category_id, name, unit)
+INSERT INTO oltp.products (category_id, name, unit)
 SELECT c.category_id, v.name, v.unit
 FROM (VALUES
     -- CÉRÉALES (CER)
@@ -43,11 +43,11 @@ FROM (VALUES
     ('CON','Bouillon alimentaire','Carton 100 cubes')
 
 ) v(code, name, unit)
-JOIN gestion_ventes.product_categories c 
+JOIN oltp.product_categories c 
     ON c.code = v.code
 WHERE NOT EXISTS (
     SELECT 1
-    FROM gestion_ventes.products p
+    FROM oltp.products p
     WHERE p.name = v.name
 );
 GO

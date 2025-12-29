@@ -1,6 +1,6 @@
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'provinces' AND schema_id = SCHEMA_ID('gestion_ventes'))
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'provinces' AND schema_id = SCHEMA_ID('oltp'))
 BEGIN
-    CREATE TABLE gestion_ventes.provinces (
+    CREATE TABLE oltp.provinces (
         province_id INT IDENTITY PRIMARY KEY,
         name NVARCHAR(100) NOT NULL UNIQUE
     );
@@ -8,7 +8,7 @@ END;
 GO
 
 
-INSERT INTO gestion_ventes.provinces (name)
+INSERT INTO oltp.provinces (name)
 SELECT v.name
 FROM (VALUES
  ('Kinshasa'),('Kongo-Central'),('Kwango'),('Kwilu'),('Mai-Ndombe'),
@@ -20,7 +20,7 @@ FROM (VALUES
  ('Lomami'),('Sankuru'),('Tanganyika')
 ) v(name)
 WHERE NOT EXISTS (
-    SELECT 1 FROM gestion_ventes.provinces p WHERE p.name = v.name
+    SELECT 1 FROM oltp.provinces p WHERE p.name = v.name
 );
 GO
 
